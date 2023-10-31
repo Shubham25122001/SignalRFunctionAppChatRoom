@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.12/signalr.min.js" integrity="sha512-rQm2bvVuqEjdaJKcVj/+bx+FnccQCHZpBIMQRJkyDACamQ12m6XuFb2aHQYgdTEnnHNIsAMeh1hODKwm2Uvy5A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        body, html{
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+
+
+/* Style for the container */
+.container {
+    width: 100%;
+    max-width: 600px; 
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f2f2f2;
+  }
+  
+  /* Style for the master element */
+  #master {
+    padding: 10px;
+  }
+  
+  /* Style for the viewMessages div */
+  #viewMessages {
+    height: 300px; 
+    overflow-y: auto; 
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+  }
+  
+  /* Style for the messageSender div */
+  #messageSender {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  /* Style for the input field */
+  #inputSend {
+    width: 80%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+  }
+  
+  /* Style for the send button */
+  #sendButton {
+    width: 18%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  #sendButton:hover {
+    background-color: #0056b3;
+  }
+  
+    </style>
+</head>
+<body>
+    <script>
+        // const connection = new signalR.HubConnectionBuilder().withUrl('http://localhost:7168/api/').configureLogging(signalR.LogLevel.Information).build();
+        const connection = new signalR.HubConnectionBuilder().withUrl('https://signalrwebchatserver.azurewebsites.net/api?code=-0TeedYiuAt-uABX69mOKE0p_0BHxrW5bHFW-fffiR3OAzFuepr-gg==').configureLogging(signalR.LogLevel.Information).build();
+        connection.start().then(() => {
+            $('#viewMessages').append("<p>" + m.text + "</p>");
+        }).catch((err) => {
+            return console.error(err.toString());
+        });
+
+
+
+        connection.on('newMessage', (m) => {
+            $('#viewMessages').append("<p>" + m.text + "</p>");
+        });
+
+        function send() {
+            $.ajax({
+                url: 'https://signalrwebchatserver.azurewebsites.net/api/sendMessage?code=1Wxlo0Fa3pP4Eok2Tli8D7AQHADCSQgno6jv3t8nZjKAAzFuwlfimg==',
+                type: 'post',
+                data: JSON.stringify({
+                    text: $('#inputSend').val()
+                }),
+                headers: {
+                    "Content-type": 'application/json',
+                },
+                dataType: 'json'
+            });
+            $('#inputSend').val("");
+        }
+        </script>
+
+<div class="container">
+    <div id="master">
+        <div id="viewMessages"></div>
+        <div id="messageSender">
+            <form>
+                <input type="text" id="inputSend" />
+                <button id="sendButton" onclick="send()" type="button">send</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
